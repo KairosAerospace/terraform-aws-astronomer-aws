@@ -66,3 +66,7 @@ output "windows_debug_box_password" {
 output "windows_debug_box_hostname" {
   value = aws_instance.windows_debug_box[0].public_dns
 }
+
+output "worker_iam_role_name" {
+  value = module.eks.worker_iam_role_name
+}
