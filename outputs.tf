@@ -1,7 +1,3 @@
-output "bastion_proxy_command" {
-  value = "ssh -i ${local_file.bastion_ssh_key_private[0].filename} ubuntu@${aws_instance.bastion[0].public_ip} -D 1234 -C -N"
-}
-
 output "kubernetes_api_sample_command" {
   value = "If you have started the api proxy using the bastion SOCKS5 proxy command, this should work:\nhttps_proxy=socks5://127.0.0.1:1234 kubectl get pods"
 }
@@ -34,9 +30,9 @@ output "tls_key" {
 }
 
 output "tls_cert" {
-  value = <<EOF
-${acme_certificate.lets_encrypt.certificate_pem}
-${acme_certificate.lets_encrypt.issuer_pem}
+  value     = ! var.lets_encrypt ? "Not applicable - lets_encrypt is not enabled." : <<EOF
+${acme_certificate.lets_encrypt[0].certificate_pem}
+${acme_certificate.lets_encrypt[0].issuer_pem}
 EOF
   sensitive = true
 }
@@ -60,11 +56,11 @@ output "depended_on" {
 }
 
 output "windows_debug_box_password" {
-  value = "${rsadecrypt(aws_instance.windows_debug_box[0].password_data, tls_private_key.ssh_key[0].private_key_pem)}"
+  value = var.enable_windows_box ? "${rsadecrypt(aws_instance.windows_debug_box[0].password_data, tls_private_key.ssh_key[0].private_key_pem)}" : "Not applicable - Windows box is not enabled."
 }
 
 output "windows_debug_box_hostname" {
-  value = aws_instance.windows_debug_box[0].public_dns
+  value = var.enable_windows_box ? aws_instance.windows_debug_box[0].public_dns : "Not applicable - Windows box is not enabled."
 }
 
 output "worker_iam_role_name" {
