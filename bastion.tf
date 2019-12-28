@@ -31,9 +31,10 @@ data "aws_ami" "windows" {
   owners = ["amazon"]
 }
 
-data "http" "local_ip" {
-  url = "http://ipv4.icanhazip.com/s"
-}
+# TODO: Put this back in once can reach this
+#data "http" "local_ip" {
+#  url = "http://ipv4.icanhazip.com/s"
+#}
 
 resource "tls_private_key" "ssh_key" {
   count     = var.enable_bastion ? 1 : 0
@@ -75,7 +76,8 @@ resource "aws_security_group" "bastion_sg" {
     protocol  = "tcp"
 
     # Please restrict your ingress to only necessary IPs and ports.
-    cidr_blocks = ["${trimspace(data.http.local_ip.body)}/32"]
+    # TODO: put this back in once can query local_ip
+    # cidr_blocks = ["${trimspace(data.http.local_ip.body)}/32"]
   }
 
   egress {
@@ -121,7 +123,8 @@ resource "aws_security_group" "windows_debug_box" {
     protocol  = "tcp"
 
     # restrict ingress to only necessary IPs and ports.
-    cidr_blocks = ["${trimspace(data.http.local_ip.body)}/32"]
+    # TODO: put this back in once can query local_ip
+    # cidr_blocks = ["${trimspace(data.http.local_ip.body)}/32"]
   }
 
   egress {
